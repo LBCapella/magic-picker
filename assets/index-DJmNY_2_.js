@@ -5,41 +5,49 @@
       <div class="mc-name">${e.name}</div>
     </div>`}function s(){let{phase:t,picks:r}=n;if(t===`idle`)return`
       <div class="stars">${i()}</div>
-      <div class="header">
-        <h1>✦ Arcano Picker ✦</h1>
-        <p>Toque na orbe para sortear</p>
-      </div>
-      <div class="orb-stage">
-        <div class="orb" id="orb">
-          <div class="orb-ring"></div>
-          <span class="orb-glyph">✦</span>
+      <div class="picker-scroll">
+        <div class="header">
+          <h1>✦ Arcano Picker ✦</h1>
+          <p>Toque na orbe para sortear</p>
         </div>
-      </div>
-      <div class="footer-note">${e.length} decks no grimório</div>`;if(t===`drawing`){let t=e[Math.floor(Math.random()*e.length)];return`
+        <div class="orb-stage">
+          <div class="orb" id="orb">
+            <div class="orb-ring"></div>
+            <span class="orb-glyph">✦</span>
+          </div>
+        </div>
+        <div class="footer-note">${e.length} decks no grimório</div>
+      </div>`;if(t===`drawing`){let t=e[Math.floor(Math.random()*e.length)];return`
       <div class="stars">${i()}</div>
-      <div class="header">
-        <h1>✦ Arcano Picker ✦</h1>
-        <p>Invocando...</p>
-      </div>
-      <div class="dual-stage" id="stage">
-        ${o(t,`Jogador 1`,`spinning`)}
-        ${o(t,`Jogador 2`,`spinning`)}
+      <div class="picker-scroll">
+        <div class="header compact">
+          <h1>✦ Arcano Picker ✦</h1>
+          <p>Invocando...</p>
+        </div>
+        <div class="dual-stage" id="stage">
+          ${o(t,`Jogador 1`,`spinning`)}
+          <div class="vs-badge">VS</div>
+          ${o(t,`Jogador 2`,`spinning`)}
+        </div>
       </div>`}let[s,c]=r;return`
     <div class="stars">${i()}</div>
-    <div class="header">
-      <h1>✦ Arcano Picker ✦</h1>
-      <p>Decks sorteados!</p>
-    </div>
-    <div class="dual-stage" id="stage">
-      ${o(s,`Jogador 1`,`reveal`)}
-      ${o(c,`Jogador 2`,`reveal`)}
-      ${a()}
-    </div>
-    <div class="controls">
-      <button class="pill-btn secondary" id="redraw-btn">↺ Sortear de Novo</button>
-      <button class="pill-btn primary" id="go-counter-btn">♥ Contador de Vida</button>
-    </div>
-    <div class="footer-note">${e.length} decks no grimório</div>`}function c(){let[e,t]=n.picks||[{name:`Jogador 1`,color:`#9b5de5`,symbol:`✦`},{name:`Jogador 2`,color:`#9b5de5`,symbol:`✦`}],[r,i]=n.lives;return`
+    <div class="picker-scroll">
+      <div class="header compact">
+        <h1>✦ Arcano Picker ✦</h1>
+        <p>Decks sorteados!</p>
+      </div>
+      <div class="dual-stage" id="stage">
+        ${o(s,`Jogador 1`,`reveal`)}
+        <div class="vs-badge">VS</div>
+        ${o(c,`Jogador 2`,`reveal`)}
+        ${a()}
+      </div>
+      <div class="controls">
+        <button class="pill-btn secondary" id="redraw-btn">↺ Sortear de Novo</button>
+        <button class="pill-btn primary" id="go-counter-btn">♥ Contador de Vida</button>
+      </div>
+      <div class="footer-note">${e.length} decks no grimório</div>
+    </div>`}function c(){let[e,t]=n.picks||[{name:`Jogador 1`,color:`#9b5de5`,symbol:`✦`},{name:`Jogador 2`,color:`#9b5de5`,symbol:`✦`}],[r,i]=n.lives;return`
     <div class="counter-screen">
       <div class="player-half top-half" style="--pc:${t.color}">
         <div class="player-inner flipped">
