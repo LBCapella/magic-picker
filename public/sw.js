@@ -1,4 +1,4 @@
-const CACHE_NAME = "arcano-picker-v1";
+const CACHE_NAME = "arcano-picker-v2";
 const BASE = new URL("./", self.location.href).pathname;
 const ASSETS_TO_CACHE = [BASE, BASE + "index.html", BASE + "manifest.json"];
 
