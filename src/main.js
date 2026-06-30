@@ -48,6 +48,11 @@ function miniCard(deck, label, anim = "") {
     </div>`;
 }
 
+function lifeDisplay(life) {
+  if (life <= 0) return "💀";
+  return life;
+}
+
 function renderPicker() {
   const { phase, picks } = state;
 
@@ -116,33 +121,42 @@ function renderCounter() {
   ];
   const [l1, l2] = state.lives;
 
+  const cls = (l) => `pz-life${l <= 5 && l > 0 ? " danger" : ""}${l <= 0 ? " dead" : ""}`;
+
   return `
     <div class="counter-screen">
-      <div class="player-half top-half" style="--pc:${d2.color}">
-        <div class="player-inner flipped">
-          <div class="deck-tag">${d2.symbol} ${d2.name}</div>
-          <div class="life-num ${l2 <= 5 ? "danger" : ""}" id="life-2">${l2}</div>
-          <div class="life-btns">
-            <button class="life-btn" data-p="1" data-d="-1">−</button>
-            <button class="life-btn" data-p="1" data-d="1">+</button>
+
+      <!-- Jogador 2 — topo (virado) -->
+      <div class="player-zone" id="zone-1" style="--pc:${d2.color}">
+        <div class="pz-watermark">${d2.symbol}</div>
+        <div class="pz-inner flipped">
+          <div class="pz-deck">${d2.symbol} ${d2.name}</div>
+          <div class="${cls(l2)}" id="life-2">${lifeDisplay(l2)}</div>
+          <div class="pz-controls">
+            <button class="pz-btn pz-minus" data-p="1" data-d="-1" data-d5="-5">−</button>
+            <button class="pz-btn pz-plus"  data-p="1" data-d="1"  data-d5="5">+</button>
           </div>
         </div>
       </div>
 
+      <!-- Divisor -->
       <div class="counter-divider">
-        <button class="reset-btn" id="reset-btn" title="Reiniciar vida">↺ 20</button>
+        <button class="reset-btn" id="reset-btn">↺ 20</button>
       </div>
 
-      <div class="player-half bot-half" style="--pc:${d1.color}">
-        <div class="player-inner">
-          <div class="deck-tag">${d1.symbol} ${d1.name}</div>
-          <div class="life-num ${l1 <= 5 ? "danger" : ""}" id="life-1">${l1}</div>
-          <div class="life-btns">
-            <button class="life-btn" data-p="0" data-d="-1">−</button>
-            <button class="life-btn" data-p="0" data-d="1">+</button>
+      <!-- Jogador 1 — base -->
+      <div class="player-zone" id="zone-0" style="--pc:${d1.color}">
+        <div class="pz-watermark">${d1.symbol}</div>
+        <div class="pz-inner">
+          <div class="pz-deck">${d1.symbol} ${d1.name}</div>
+          <div class="${cls(l1)}" id="life-1">${lifeDisplay(l1)}</div>
+          <div class="pz-controls">
+            <button class="pz-btn pz-minus" data-p="0" data-d="-1" data-d5="-5">−</button>
+            <button class="pz-btn pz-plus"  data-p="0" data-d="1"  data-d5="5">+</button>
           </div>
         </div>
       </div>
+
     </div>`;
 }
 
@@ -160,10 +174,47 @@ function render() {
   bind();
 }
 
+// ── counter effects ───────────────────────────────────────────
+
+function spawnFloat(zoneEl, delta) {
+  const el = document.createElement("div");
+  el.className = `float-num ${delta < 0 ? "float-dmg" : "float-heal"}`;
+  el.textContent = delta > 0 ? `+${delta}` : `${delta}`;
+  el.style.left = (25 + Math.random() * 50) + "%";
+  el.style.top  = (30 + Math.random() * 30) + "%";
+  zoneEl.appendChild(el);
+  setTimeout(() => el.remove(), 950);
+}
+
+function applyLife(playerIndex, delta) {
+  state.lives[playerIndex] = Math.max(0, state.lives[playerIndex] + delta);
+  const life = state.lives[playerIndex];
+
+  const lifeEl = document.getElementById(`life-${playerIndex + 1}`);
+  const zoneEl = document.getElementById(`zone-${playerIndex}`);
+
+  if (lifeEl) {
+    lifeEl.textContent = lifeDisplay(life);
+    lifeEl.className = `pz-life${life <= 5 && life > 0 ? " danger" : ""}${life <= 0 ? " dead" : ""}`;
+    // shake no número ao tomar dano
+    if (delta < 0 && life > 0) {
+      lifeEl.classList.remove("shake");
+      void lifeEl.offsetWidth;
+      lifeEl.classList.add("shake");
+    }
+  }
+
+  if (zoneEl) {
+    zoneEl.classList.remove("flash-dmg", "flash-heal");
+    void zoneEl.offsetWidth;
+    zoneEl.classList.add(delta < 0 ? "flash-dmg" : "flash-heal");
+    spawnFloat(zoneEl, delta);
+  }
+}
+
 // ── events ───────────────────────────────────────────────────
 
 function bind() {
-  // tabs
   document.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       state.tab = btn.dataset.tab;
@@ -181,18 +232,28 @@ function bind() {
   }
 
   if (state.tab === "counter") {
-    document.querySelectorAll(".life-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const p = parseInt(btn.dataset.p);
-        const d = parseInt(btn.dataset.d);
-        state.lives[p] = Math.max(0, state.lives[p] + d);
-        // fast update without full re-render
-        const el = document.getElementById(`life-${p + 1}`);
-        if (el) {
-          el.textContent = state.lives[p];
-          el.classList.toggle("danger", state.lives[p] <= 5);
+    document.querySelectorAll(".pz-btn").forEach((btn) => {
+      let pressTimer = null;
+      let longPressed = false;
+
+      const start = () => {
+        longPressed = false;
+        pressTimer = setTimeout(() => {
+          longPressed = true;
+          applyLife(parseInt(btn.dataset.p), parseInt(btn.dataset.d5));
+        }, 500);
+      };
+
+      const end = () => {
+        clearTimeout(pressTimer);
+        if (!longPressed) {
+          applyLife(parseInt(btn.dataset.p), parseInt(btn.dataset.d));
         }
-      });
+      };
+
+      btn.addEventListener("pointerdown", start);
+      btn.addEventListener("pointerup",   end);
+      btn.addEventListener("pointerleave", () => clearTimeout(pressTimer));
     });
 
     document.getElementById("reset-btn")?.addEventListener("click", () => {
@@ -222,7 +283,10 @@ function startDraw() {
     if (stage) {
       const r1 = decks[Math.floor(Math.random() * decks.length)];
       const r2 = decks[Math.floor(Math.random() * decks.length)];
-      stage.innerHTML = miniCard(r1, "Jogador 1", "spinning") + miniCard(r2, "Jogador 2", "spinning");
+      stage.innerHTML =
+        miniCard(r1, "Jogador 1", "spinning") +
+        '<div class="vs-badge">VS</div>' +
+        miniCard(r2, "Jogador 2", "spinning");
     }
     if (count >= MAX) {
       clearInterval(iv);
