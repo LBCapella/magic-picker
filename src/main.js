@@ -54,30 +54,35 @@ function renderPicker() {
   if (phase === "idle") {
     return `
       <div class="stars">${stars()}</div>
-      <div class="header">
-        <h1>✦ Arcano Picker ✦</h1>
-        <p>Toque na orbe para sortear</p>
-      </div>
-      <div class="orb-stage">
-        <div class="orb" id="orb">
-          <div class="orb-ring"></div>
-          <span class="orb-glyph">✦</span>
+      <div class="picker-scroll">
+        <div class="header">
+          <h1>✦ Arcano Picker ✦</h1>
+          <p>Toque na orbe para sortear</p>
         </div>
-      </div>
-      <div class="footer-note">${decks.length} decks no grimório</div>`;
+        <div class="orb-stage">
+          <div class="orb" id="orb">
+            <div class="orb-ring"></div>
+            <span class="orb-glyph">✦</span>
+          </div>
+        </div>
+        <div class="footer-note">${decks.length} decks no grimório</div>
+      </div>`;
   }
 
   if (phase === "drawing") {
     const r = decks[Math.floor(Math.random() * decks.length)];
     return `
       <div class="stars">${stars()}</div>
-      <div class="header">
-        <h1>✦ Arcano Picker ✦</h1>
-        <p>Invocando...</p>
-      </div>
-      <div class="dual-stage" id="stage">
-        ${miniCard(r, "Jogador 1", "spinning")}
-        ${miniCard(r, "Jogador 2", "spinning")}
+      <div class="picker-scroll">
+        <div class="header compact">
+          <h1>✦ Arcano Picker ✦</h1>
+          <p>Invocando...</p>
+        </div>
+        <div class="dual-stage" id="stage">
+          ${miniCard(r, "Jogador 1", "spinning")}
+          <div class="vs-badge">VS</div>
+          ${miniCard(r, "Jogador 2", "spinning")}
+        </div>
       </div>`;
   }
 
@@ -85,20 +90,23 @@ function renderPicker() {
   const [d1, d2] = picks;
   return `
     <div class="stars">${stars()}</div>
-    <div class="header">
-      <h1>✦ Arcano Picker ✦</h1>
-      <p>Decks sorteados!</p>
-    </div>
-    <div class="dual-stage" id="stage">
-      ${miniCard(d1, "Jogador 1", "reveal")}
-      ${miniCard(d2, "Jogador 2", "reveal")}
-      ${sparks()}
-    </div>
-    <div class="controls">
-      <button class="pill-btn secondary" id="redraw-btn">↺ Sortear de Novo</button>
-      <button class="pill-btn primary" id="go-counter-btn">♥ Contador de Vida</button>
-    </div>
-    <div class="footer-note">${decks.length} decks no grimório</div>`;
+    <div class="picker-scroll">
+      <div class="header compact">
+        <h1>✦ Arcano Picker ✦</h1>
+        <p>Decks sorteados!</p>
+      </div>
+      <div class="dual-stage" id="stage">
+        ${miniCard(d1, "Jogador 1", "reveal")}
+        <div class="vs-badge">VS</div>
+        ${miniCard(d2, "Jogador 2", "reveal")}
+        ${sparks()}
+      </div>
+      <div class="controls">
+        <button class="pill-btn secondary" id="redraw-btn">↺ Sortear de Novo</button>
+        <button class="pill-btn primary" id="go-counter-btn">♥ Contador de Vida</button>
+      </div>
+      <div class="footer-note">${decks.length} decks no grimório</div>
+    </div>`;
 }
 
 function renderCounter() {
