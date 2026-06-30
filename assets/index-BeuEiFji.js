@@ -3,7 +3,7 @@
       <div class="mc-sym">${e.symbol}</div>
       <div class="mc-label">${t}</div>
       <div class="mc-name">${e.name}</div>
-    </div>`}function s(){let{phase:t,picks:r}=n;if(t===`idle`)return`
+    </div>`}function s(e){return e<=0?`💀`:e}function c(){let{phase:t,picks:r}=n;if(t===`idle`)return`
       <div class="stars">${i()}</div>
       <div class="picker-scroll">
         <div class="header">
@@ -47,35 +47,42 @@
         <button class="pill-btn primary" id="go-counter-btn">♥ Contador de Vida</button>
       </div>
       <div class="footer-note">${e.length} decks no grimório</div>
-    </div>`}function c(){let[e,t]=n.picks||[{name:`Jogador 1`,color:`#9b5de5`,symbol:`✦`},{name:`Jogador 2`,color:`#9b5de5`,symbol:`✦`}],[r,i]=n.lives;return`
+    </div>`}function l(){let[e,t]=n.picks||[{name:`Jogador 1`,color:`#9b5de5`,symbol:`✦`},{name:`Jogador 2`,color:`#9b5de5`,symbol:`✦`}],[r,i]=n.lives,a=e=>`pz-life${e<=5&&e>0?` danger`:``}${e<=0?` dead`:``}`;return`
     <div class="counter-screen">
-      <div class="player-half top-half" style="--pc:${t.color}">
-        <div class="player-inner flipped">
-          <div class="deck-tag">${t.symbol} ${t.name}</div>
-          <div class="life-num ${i<=5?`danger`:``}" id="life-2">${i}</div>
-          <div class="life-btns">
-            <button class="life-btn" data-p="1" data-d="-1">−</button>
-            <button class="life-btn" data-p="1" data-d="1">+</button>
+
+      <!-- Jogador 2 — topo (virado) -->
+      <div class="player-zone" id="zone-1" style="--pc:${t.color}">
+        <div class="pz-watermark">${t.symbol}</div>
+        <div class="pz-inner flipped">
+          <div class="pz-deck">${t.symbol} ${t.name}</div>
+          <div class="${a(i)}" id="life-2">${s(i)}</div>
+          <div class="pz-controls">
+            <button class="pz-btn pz-minus" data-p="1" data-d="-1" data-d5="-5">−</button>
+            <button class="pz-btn pz-plus"  data-p="1" data-d="1"  data-d5="5">+</button>
           </div>
         </div>
       </div>
 
+      <!-- Divisor -->
       <div class="counter-divider">
-        <button class="reset-btn" id="reset-btn" title="Reiniciar vida">↺ 20</button>
+        <button class="reset-btn" id="reset-btn">↺ 20</button>
       </div>
 
-      <div class="player-half bot-half" style="--pc:${e.color}">
-        <div class="player-inner">
-          <div class="deck-tag">${e.symbol} ${e.name}</div>
-          <div class="life-num ${r<=5?`danger`:``}" id="life-1">${r}</div>
-          <div class="life-btns">
-            <button class="life-btn" data-p="0" data-d="-1">−</button>
-            <button class="life-btn" data-p="0" data-d="1">+</button>
+      <!-- Jogador 1 — base -->
+      <div class="player-zone" id="zone-0" style="--pc:${e.color}">
+        <div class="pz-watermark">${e.symbol}</div>
+        <div class="pz-inner">
+          <div class="pz-deck">${e.symbol} ${e.name}</div>
+          <div class="${a(r)}" id="life-1">${s(r)}</div>
+          <div class="pz-controls">
+            <button class="pz-btn pz-minus" data-p="0" data-d="-1" data-d5="-5">−</button>
+            <button class="pz-btn pz-plus"  data-p="0" data-d="1"  data-d5="5">+</button>
           </div>
         </div>
       </div>
-    </div>`}function l(){let e=n.tab===`picker`;return`
+
+    </div>`}function u(){let e=n.tab===`picker`;return`
     <nav class="tab-bar">
       <button class="tab-btn ${e?`active`:``}" data-tab="picker">✦ Sorteador</button>
       <button class="tab-btn ${e?``:`active`}" data-tab="counter">♥ Vida</button>
-    </nav>`}function u(){t.innerHTML=(n.tab===`picker`?s():c())+l(),d()}function d(){document.querySelectorAll(`.tab-btn`).forEach(e=>{e.addEventListener(`click`,()=>{n.tab=e.dataset.tab,u()})}),n.tab===`picker`&&(document.getElementById(`orb`)?.addEventListener(`click`,p),document.getElementById(`redraw-btn`)?.addEventListener(`click`,p),document.getElementById(`go-counter-btn`)?.addEventListener(`click`,()=>{n.tab=`counter`,u()})),n.tab===`counter`&&(document.querySelectorAll(`.life-btn`).forEach(e=>{e.addEventListener(`click`,()=>{let t=parseInt(e.dataset.p),r=parseInt(e.dataset.d);n.lives[t]=Math.max(0,n.lives[t]+r);let i=document.getElementById(`life-${t+1}`);i&&(i.textContent=n.lives[t],i.classList.toggle(`danger`,n.lives[t]<=5))})}),document.getElementById(`reset-btn`)?.addEventListener(`click`,()=>{n.lives=[20,20],u()}))}var f=!1;function p(){if(f)return;f=!0,n.phase=`drawing`,u();let t=r(),i=0,a=setInterval(()=>{i++;let n=document.getElementById(`stage`);if(n){let t=e[Math.floor(Math.random()*e.length)],r=e[Math.floor(Math.random()*e.length)];n.innerHTML=o(t,`Jogador 1`,`spinning`)+o(r,`Jogador 2`,`spinning`)}i>=16&&(clearInterval(a),m(t))},85)}function m(e){n.picks=e,n.lives=[20,20],n.phase=`result`,u(),setTimeout(()=>{document.querySelectorAll(`.spark`).forEach(e=>e.classList.add(`go`))},20),setTimeout(()=>{f=!1},900)}u(),`serviceWorker`in navigator&&window.addEventListener(`load`,()=>{navigator.serviceWorker.register(`/magic-picker/sw.js`).catch(()=>{})});
+    </nav>`}function d(){t.innerHTML=(n.tab===`picker`?c():l())+u(),m()}function f(e,t){let n=document.createElement(`div`);n.className=`float-num ${t<0?`float-dmg`:`float-heal`}`,n.textContent=t>0?`+${t}`:`${t}`,n.style.left=25+Math.random()*50+`%`,n.style.top=30+Math.random()*30+`%`,e.appendChild(n),setTimeout(()=>n.remove(),950)}function p(e,t){n.lives[e]=Math.max(0,n.lives[e]+t);let r=n.lives[e],i=document.getElementById(`life-${e+1}`),a=document.getElementById(`zone-${e}`);i&&(i.textContent=s(r),i.className=`pz-life${r<=5&&r>0?` danger`:``}${r<=0?` dead`:``}`,t<0&&r>0&&(i.classList.remove(`shake`),i.offsetWidth,i.classList.add(`shake`))),a&&(a.classList.remove(`flash-dmg`,`flash-heal`),a.offsetWidth,a.classList.add(t<0?`flash-dmg`:`flash-heal`),f(a,t))}function m(){document.querySelectorAll(`.tab-btn`).forEach(e=>{e.addEventListener(`click`,()=>{n.tab=e.dataset.tab,d()})}),n.tab===`picker`&&(document.getElementById(`orb`)?.addEventListener(`click`,g),document.getElementById(`redraw-btn`)?.addEventListener(`click`,g),document.getElementById(`go-counter-btn`)?.addEventListener(`click`,()=>{n.tab=`counter`,d()})),n.tab===`counter`&&(document.querySelectorAll(`.pz-btn`).forEach(e=>{let t=null,n=!1;e.addEventListener(`pointerdown`,()=>{n=!1,t=setTimeout(()=>{n=!0,p(parseInt(e.dataset.p),parseInt(e.dataset.d5))},500)}),e.addEventListener(`pointerup`,()=>{clearTimeout(t),n||p(parseInt(e.dataset.p),parseInt(e.dataset.d))}),e.addEventListener(`pointerleave`,()=>clearTimeout(t))}),document.getElementById(`reset-btn`)?.addEventListener(`click`,()=>{n.lives=[20,20],d()}))}var h=!1;function g(){if(h)return;h=!0,n.phase=`drawing`,d();let t=r(),i=0,a=setInterval(()=>{i++;let n=document.getElementById(`stage`);if(n){let t=e[Math.floor(Math.random()*e.length)],r=e[Math.floor(Math.random()*e.length)];n.innerHTML=o(t,`Jogador 1`,`spinning`)+`<div class="vs-badge">VS</div>`+o(r,`Jogador 2`,`spinning`)}i>=16&&(clearInterval(a),_(t))},85)}function _(e){n.picks=e,n.lives=[20,20],n.phase=`result`,d(),setTimeout(()=>{document.querySelectorAll(`.spark`).forEach(e=>e.classList.add(`go`))},20),setTimeout(()=>{h=!1},900)}d(),`serviceWorker`in navigator&&window.addEventListener(`load`,()=>{navigator.serviceWorker.register(`/magic-picker/sw.js`).catch(()=>{})});
